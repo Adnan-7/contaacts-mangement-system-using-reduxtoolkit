@@ -1,8 +1,37 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import contactsSlice from '../../slices/contacts';
+import { v1 as uuid } from 'uuid';
 
 const Contacts = () => {
   const contacts = useSelector((state) => state.contacts);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+
+  const dispatch = useDispatch();
+
+  const onAddClick = () => {
+    dispatch(
+      contactsSlice.actions.add({
+        id: uuid(),
+        firstName,
+        lastName,
+        email,
+        phone,
+      })
+    );
+    setFirstName('');
+    setLastName('');
+    setEmail('');
+    setPhone('');
+  };
+
+  const onDeletClick = (contact) => {
+    dispatch(contactsSlice.actions.remove(contact.id));
+  };
+
   return (
     <div className='container'>
       <h4 className='grid-header'>Contacts</h4>
@@ -14,6 +43,8 @@ const Contacts = () => {
               type='text'
               placeholder='FirstName'
               className='form-control'
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
           </div>
 
@@ -22,18 +53,34 @@ const Contacts = () => {
               type='text'
               placeholder='LastName'
               className='form-control'
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
             />
           </div>
 
           <div className='form-group'>
-            <input type='text' placeholder='Email' className='form-control' />
+            <input
+              type='text'
+              placeholder='Email'
+              className='form-control'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
           <div className='form-group'>
-            <input type='text' placeholder='Phone' className='form-control' />
+            <input
+              type='text'
+              placeholder='Phone'
+              className='form-control'
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </div>
 
-          <button className='button button-green'>Save</button>
+          <button className='button button-green' onClick={onAddClick}>
+            Save
+          </button>
         </details>
       </div>
 
@@ -59,7 +106,11 @@ const Contacts = () => {
                 <td>{contact.email}</td>
                 <td>{contact.phone}</td>
                 <td>
-                  <button className='button button-red'>Delete</button>
+                  <button
+                    className='button button-red'
+                    onClick={() => onDeletClick(contact)}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
